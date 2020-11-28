@@ -10,48 +10,58 @@
 -Закрытие модального окна по клику на кнопку button[data-action="close-lightbox"].
 -Очистка значения атрибута src элемента img.lightbox__image. Это необходимо для того, 
 чтобы при следующем открытии модального окна, пока грузится изображение, мы не видели предыдущее.
- */
+*/
 
-import gallery from "./gallery-items.js";
-console.log(gallery);
+import gallery from './gallery-items.js';
 
 // Создание и рендер разметки по массиву данных и предоставленному шаблону.
 
 const refs = {
-    galleryList: document.querySelector('js.gallery'),
-    jsLightbox: document.querySelector('js.lightbox'),
-    lightboxImage: document.querySelector('.lightbox__image'),
-    lightboxBtn:  document.querySelector('button[data-action="close-lightbox"]'),
-    lightboxOverlay: document.querySelector('.lightbox__overlay'),
+    galleryList: document.querySelector('.js-gallery'),
+    modal: document.querySelector('.lightbox'),
+    modalImg: document.querySelector('.lightbox__img'),
+    btnCloseModal: document.querySelector('button[data-action="close-lightbox"]'),
+    overlay: document.querySelector('.lightbox__overlay'),
 };
-
+  
+// создание списка с помощью insertAdjacentHTML с деструктуризацией
 const galleryItems = gallery
-.map((item, index) => createGalleryItem(item, index))
-.join('');
-refs.galleryList.insertAdjacentHTML('beforeend', galleryItems);
-
-function createGalleryItem({ preview, original, description }, index) {
-  const galleryElement = `
-   <li class="gallery__item">
-     <a
-       class="gallery__link"
-        href="${original}">
-        <img
-            class="gallery__image"
-            src="${preview}"
-            data-source="${original}"
-            data-index="${index}"
-            alt="${description}"/>
-      </a>
-    </li>`;
-  return galleryElement;
+    .map((item, index) => createGalleryItem(item, index))
+    .join('');
+ function createGalleryItem({ original, preview, description }, index) {
+    const galleryElement = `
+      <li class="gallery__item">
+    <a
+      class="gallery__link"
+      href="${original}"
+    >
+      <img
+        class="gallery__image"
+        src="${preview}"
+        data-source="${original}"
+        data-index="${index}"
+        alt="${description}"
+      />
+    </a>
+  </li>
+    `;
+    return galleryElement;
 }
+  
+refs.galleryList.insertAdjacentHTML('beforeend', galleryItems);
+//Реализация делегирования на галерее ul.js-gallery и получение url большого изображения
 
-// -Реализация делегирования на галерее ul.js-gallery и получение url большого изображения.
+refs.galleryList.addEventListener('click', onGalleryClick);
+  function onGalleryClick(event) {
+    event.preventDefault();
+  
+   const imgRef = event.target;
+   const bigImgRef = imgRef.dataset.source;
 
-galleryList
-
-
-
-
-
+    if (event.target.nodeName !== 'IMG') {
+      return;
+    }
+   
+    openModal();
+    setModalImgSrc(bigImgRef);
+}
